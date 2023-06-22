@@ -7,10 +7,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Matricula {
+public class TipoRiesgo {
 
-	private int idMatricula;
-	private int idAlumno;
-	private int idCurso;
-
+	private int idTipoRiesgo;
+	private String calificacion;
+	private int flag;	
+	
 }
+
+
+

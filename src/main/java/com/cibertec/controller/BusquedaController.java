@@ -12,9 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.cibertec.entity.Categoria;
-import com.cibertec.entity.Curso;
-import com.cibertec.entity.Matricula;
+import com.cibertec.entity.Empresa;
+import com.cibertec.entity.TipoRiesgo;
 
 import lombok.extern.apachecommons.CommonsLog;
 
@@ -24,17 +23,33 @@ import lombok.extern.apachecommons.CommonsLog;
 public class BusquedaController {
 
 	//PostgreSQL
-	String URL_CATEGORIA = "http://localhost:8091/rest/categoria";
+	String URL_EMPRESA = "http://localhost:8091/rest/Empresa/porTipoRiesgo";
 	
 	//MongoDB
-	String URL_CURSO = "http://localhost:8093/rest/curso/porCategoria";
+	String URL_TIPO_RIESGO = "http://localhost:8093/rest/TipoRiesgo";
 	
 	//MySQL
-	String URL_MATRICULA = "http://localhost:8092/rest/matricula/porCurso";
+	//String URL_MATRICULA = "http://localhost:8092/rest/matricula/porCurso";
 	
 	@Autowired
 	private RestTemplate restTemplate;
 	
+	@GetMapping("/Empresas")
+	public ResponseEntity<?> lista(){
+		List<Empresa> lstSalida = new ArrayList<Empresa>();
+		
+		ResponseEntity<List<TipoRiesgo>> responseEntity = restTemplate.exchange(URL_TIPO_RIESGO, HttpMethod.GET, null, new ParameterizedTypeReference<List<TipoRiesgo>>(){});
+		List<TipoRiesgo> lstTipoRiesgo = responseEntity.getBody();
+		log.info(">>> lstCategoria " + lstTipoRiesgo);
+		
+		for (TipoRiesgo tipoRiesgo : lstTipoRiesgo) {
+			ResponseEntity<List<Empresa>> responseEntity2 = restTemplate.exchange(URL_EMPRESA+"/"+tipoRiesgo.getIdTipoRiesgo(), HttpMethod.GET, null, new ParameterizedTypeReference<List<Empresa>>(){});
+			List<Empresa> lstEmpresa = responseEntity2.getBody();
+			lstSalida.addAll(lstEmpresa);
+		}
+		return ResponseEntity.ok(lstSalida);
+	}
+	/*
 	@GetMapping("/matriculas")
 	public ResponseEntity<?> lista() {
 		List<Matricula> lstSalida = new ArrayList<Matricula>(); 
@@ -60,6 +75,6 @@ public class BusquedaController {
 		}
 		return ResponseEntity.ok(lstSalida);
 	}
-	
+	*/
 
 }
